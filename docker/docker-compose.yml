@@ -1,0 +1,51 @@
+version: "3.7"
+services:
+  rates-app:
+    build:
+      context: ./
+      args:
+        - USER_ID
+        - GROUP_ID
+      dockerfile: Dockerfile
+    image: rates-app
+    container_name: rates-app
+    restart: unless-stopped
+    volumes:
+      - ../backend:/var/www
+    networks:
+      - rates
+  rates-db:
+    image: mysql:5.7
+    container_name: rates-db
+    restart: unless-stopped
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: local
+    volumes:
+      - ./config/mysql:/docker-entrypoint-initdb.d
+    networks:
+      - rates
+    ports:
+      - 33068:3306
+  rates-nginx:
+    image: nginx:alpine
+    container_name: rates-nginx
+    restart: unless-stopped
+    ports:
+      - 8888:80
+    volumes:
+      - ../backend:/var/www
+      - ./config/nginx:/etc/nginx/conf.d
+    networks:
+      - rates
+  rates-redis:
+    image: redis:alpine
+    container_name: rates-redis
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+    networks:
+      - rates
+networks:
+  rates:
+    name: "rates"
+    driver: bridge
