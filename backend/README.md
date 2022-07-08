@@ -23,6 +23,10 @@ GET - http://localhost:8888/api/exchange-rates/by-date/01.01.2022
 Добавить примечание к курсу:
 
 POST - http://localhost:8888/api/exchange-rates/add-note/{id}
+
   note: текст текст
 
-(где {id} - id из испка сохраенных курсов, note - примечание) 
+(
+где {id} - id из списка сохраненных курсов, 
+note (post параметр) - примечание
+) 
